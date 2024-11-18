@@ -48,6 +48,8 @@ class KindeSDK(
     private val loginRedirect: String,
     private val logoutRedirect: String,
     private val scopes: List<String> = DEFAULT_SCOPES,
+    overrideDomain: String? = null,
+    overrideClientId: String? = null,
     private val sdkListener: SDKListener
 ) : TokenProvider, ClaimApi by ClaimDelegate {
 
@@ -114,13 +116,17 @@ class KindeSDK(
             PackageManager.GET_META_DATA
         )
         val metaData = appInfo.metaData
-        domain = if (metaData.containsKey(DOMAIN_KEY)) {
+        domain = if (overrideDomain != null ) {
+            overrideDomain
+        } else if (metaData.containsKey(DOMAIN_KEY)) {
             metaData.getString(DOMAIN_KEY).orEmpty()
         } else {
             sdkListener.onException(IllegalStateException("$DOMAIN_KEY is not present at meta-data"))
             ""
         }
-        clientId = if (metaData.containsKey(CLIENT_ID_KEY)) {
+        clientId = if (overrideClientId != null) {
+            overrideClientId
+        } else if (metaData.containsKey(CLIENT_ID_KEY)) {
             metaData.getString(CLIENT_ID_KEY).orEmpty()
         } else {
             sdkListener.onException(IllegalStateException("$CLIENT_ID_KEY is not present at meta-data"))
