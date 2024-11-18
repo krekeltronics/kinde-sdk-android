@@ -19,6 +19,9 @@ buildscript {
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    // Allows publishing for forks via jitpack
+    id('maven-publish')
+    id('signing')
 }
 
 allprojects {
@@ -28,8 +31,12 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
 apply from: "${rootDir}/scripts/publish-root.gradle"
+
+// Publish via Maven/Jitpack
+publishing {
+    group "com.krekeltronics"
+    publications {
+        release(MavenPublication)
+    }
+}
